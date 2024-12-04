@@ -1,0 +1,82 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+
+// Connect to MongoDB
+async function dbconnect() {
+  try {
+    await mongoose.connect("mongodb://127.0.0.1:27017/museumdetails");
+    console.log("MongoDB connected");
+  } catch (error) {
+    console.error("Database connection error:", error);
+    process.exit(1);
+  }
+}
+dbconnect();
+
+// Define Schema and Model
+const museumSchema = new mongoose.Schema({
+  id: Number,
+  name: String,
+  category: { type: String, enum: ["painting", "sculpture", "artifact"] },
+  dateCreated: Date,
+  creatorName: String,
+});
+
+const Museum = mongoose.model("Museum", museumSchema);
+
+// Express Setup
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Routes
+app.get("/museums", async (req, res) => {
+  try {
+    const museums = await Museum.find();
+    res.send(museums);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+app.post("/museums", async (req, res) => {
+  try {
+    const museum = new Museum(req.body);
+    await museum.save();
+    res.status(201).send("Museum added successfully");
+  } catch (err) {
+    res.status(400).send({ message: "Failed to add museum", error: err.message });
+  }
+});
+
+app.put("/museums/:id", async (req, res) => {
+  try {
+    const result = await Museum.updateOne({ id: req.params.id }, req.body);
+    if (result.modifiedCount === 0) {
+      res.status(404).send("Museum not found with the provided ID");
+    } else {
+      res.send("Museum updated successfully");
+    }
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+app.delete("/museums/:id", async (req, res) => {
+  try {
+    const result = await Museum.deleteOne({ id: req.params.id });
+    if (result.deletedCount === 0) {
+      res.status(404).send("Museum not found with the provided ID");
+    } else {
+      res.send("Museum deleted successfully");
+    }
+  } catch (err) {
+    res.status(500).send({ message: "Failed to delete museum", error: err.message });
+  }
+});
+
+// Start the Server
+app.listen(9000, () => {
+  console.log("Server is running on http://localhost:9000");
+});

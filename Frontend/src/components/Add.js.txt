@@ -1,0 +1,54 @@
+import React, { useRef } from "react";
+import axios from "axios";
+
+function Add() {
+  const idRef = useRef();
+  const nameRef = useRef();
+  const categoryRef = useRef();
+  const dateCreatedRef = useRef();
+  const creatorNameRef = useRef();
+
+  const handleAdd = () => {
+    const data = {
+      id: idRef.current.value,
+      name: nameRef.current.value,
+      category: categoryRef.current.value,
+      dateCreated: dateCreatedRef.current.value,
+      creatorName: creatorNameRef.current.value,
+    };
+
+    axios
+      .post("http://localhost:9000/museums", data)
+      .then((response) => {
+        alert("Museum added successfully!");
+        idRef.current.value = "";
+        nameRef.current.value = "";
+        categoryRef.current.value = "";
+        dateCreatedRef.current.value = "";
+        creatorNameRef.current.value = "";
+      })
+      .catch((error) => {
+        alert("Failed to add museum!");
+        console.error(error);
+      });
+  };
+
+  return (
+    <div className="container">
+      <h1>Add Museum</h1>
+      <input type="text" ref={idRef} placeholder="ID" />
+      <br />
+      <input type="text" ref={nameRef} placeholder="Name" />
+      <br />
+      <input type="text" ref={categoryRef} placeholder="Category" />
+      <br />
+      <input type="date" ref={dateCreatedRef} />
+      <br />
+      <input type="text" ref={creatorNameRef} placeholder="Creator Name" />
+      <br />
+      <button onClick={handleAdd}>Add Museum</button>
+    </div>
+  );
+}
+
+export default Add;

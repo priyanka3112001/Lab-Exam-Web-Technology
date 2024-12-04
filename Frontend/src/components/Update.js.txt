@@ -1,0 +1,72 @@
+import React, { useRef } from "react";
+import axios from "axios";
+
+function UpdateArticle() {
+  const idRef = useRef();
+  const nameRef = useRef();
+  const categoryRef = useRef();
+  const dateCreatedRef = useRef();
+  const creatorNameRef = useRef();
+
+  const handleUpdateArticle = () => {
+    const id = idRef.current.value;
+    const data = {
+      name: nameRef.current.value,
+      category: categoryRef.current.value,
+      dateCreated: dateCreatedRef.current.value,
+      creatorName: creatorNameRef.current.value
+    };
+
+    // Validation
+    if (!id) {
+      alert("Please enter the ID of the article to update.");
+      return;
+    }
+    if (!data.name && !data.category && !data.dateCreated && !data.creatorName) {
+      alert("Please provide at least one field to update.");
+      return;
+    }
+
+    // API Call
+    axios
+      .put(`http://localhost:9000/museums/${id}`, data)
+      .then((response) => {
+        console.log(response.data);
+        alert("Article updated successfully!");
+        // Clear input fields
+        idRef.current.value = "";
+        nameRef.current.value = "";
+        categoryRef.current.value = "";
+        dateCreatedRef.current.value = "";
+        creatorNameRef.current.value = "";
+      })
+      .catch((error) => {
+        console.error("There was an error updating the Article:", error);
+        alert("Failed to update Article.");
+      });
+  };
+
+  return (
+    <div className="container">
+      <h1>Update Article</h1>
+      <input type="text" ref={idRef} placeholder="ID (required)" />
+      <br />
+      <input type="text" ref={nameRef} placeholder="Name" />
+      <br />
+      <select ref={categoryRef}>
+        <option value="">Select Category</option>
+        <option value="painting">Painting</option>
+        <option value="sculpture">Sculpture</option>
+        <option value="artifact">Artifact</option>
+      </select>
+      <br />
+      <input type="date" ref={dateCreatedRef} placeholder="Date Created" />
+      <br />
+      <input type="text" ref={creatorNameRef} placeholder="Creator Name" />
+      <br />
+      <button onClick={handleUpdateArticle}>Update Article</button>
+    </div>
+  );
+}
+
+export default UpdateArticle;

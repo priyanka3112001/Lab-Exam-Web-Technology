@@ -1,0 +1,26 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import App from "./components/App";
+import Add from "./components/Add";
+import Show from "./components/Show";
+import Delete from "./components/Delete";
+import Update from "./components/Update";
+import "./css/style.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+const projectroute = createBrowserRouter([
+  {
+    path: "",
+    element: <App />,
+    children: [
+      { path: "addpage", element: <Add /> },
+      { path: "showpage", element: <Show /> },
+      { path: "deletepage", element: <Delete /> },
+      { path: "updatepage", element: <Update /> },
+    ],
+  },
+]);
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<RouterProvider router={projectroute} />);
